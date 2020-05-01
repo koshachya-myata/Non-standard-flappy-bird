@@ -71,29 +71,73 @@ const ground =
 }
 const stars =
 {
+	starsPositions:
+	[
+		{x: 123, y: 93},
+		{x: 25, y: 25},
+		{x: cvs.width - 100, y: 50},
+		{x: 120, y: 20},
+		{x: cvs.width - 50, y: 20},
+		{x: cvs.width - 60, y: 100},
+		{x: 40, y: 85},
+	],
 	height: 112,
 	width: cvs.width,
 	a_param: 0.6,
 	da: 0.01,
+	activeStar:
+	[
+		{
+			x: 123,
+			y: 93,
+			a_param: 0,
+			da: 0.01
+		}
+	],
 	draw : function()
 	{
-		ctx.beginPath();
-		ctx.fillStyle = "rgb(255, 255, 255)";
-		ctx.arc(123, 93, 2, 0, 2 * Math.PI, true); // x, y, R, ang, ang, по часов\против
-		ctx.fill();
-
-		ctx.beginPath();
-		ctx.fillStyle = "rgba(255, 255, 255,"+ String(this.a_param) + ")";
-		ctx.arc(123, 93, 6, 0, 2 * Math.PI, true); // x, y, R, ang, ang, по часов\против
-		ctx.fill();
+		for (let i = 0; i < this.starsPositions.length; i++)
+		{
+			ctx.beginPath();
+			ctx.fillStyle = "rgb(255, 255, 255)";
+			ctx.arc(this.starsPositions[i].x, this.starsPositions[i].y, 2, 0, 2 * Math.PI, true); // x, y, R, ang, ang, по часов\против
+			ctx.fill();
+		}
+		for (let i = 0; i < this.activeStar.length; i++)
+		{
+			ctx.beginPath();
+			ctx.fillStyle = "rgba(255, 255, 255,"+ String(this.activeStar[i].a_param) + ")";
+			ctx.arc(this.activeStar[i].x, this.activeStar[i].y, 6, 0, 2 * Math.PI, true); // x, y, R, ang, ang, по часов\против
+			ctx.fill();
+		}
 	},
 	update: function()
 	{
-		this.a_param = (this.a_param + this.da);
-		if (this.a_param >= 0.6)
-			this.da = -0.01;
-		if (this.a_param <= 0)
-			this.da = 0.01;
+		if (frames % 200 == 0)
+		{
+			let chance = Math.random();
+			if (chance < 0.5 && this.starsPositions.length > 0)
+				this.activeStar.shift(Math.floor(Math.random() * (this.starsPositions.length)));
+			if (this.starsPositions.length == 0 || chance > 0.5)
+			{
+				let star = Math.floor(Math.random() * (this.starsPositions.length));
+				this.activeStar.push(
+				{
+					x: this.starsPositions[star].x,
+					y: this.starsPositions[star].y,
+					a_param: 0,
+					da: 0.01
+				})
+			}
+		}
+		for (let i = 0; i < this.activeStar.length; i++)
+		{
+			this.activeStar[i].a_param = (this.activeStar[i].a_param + this.activeStar[i].da);
+			if (this.activeStar[i].a_param >= 0.6)
+				this.activeStar[i].da = -0.01;
+			if (this.activeStar[i].a_param <= 0)
+				this.activeStar[i].da = 0.01;
+		}
 	}
 }
 const bird = 
@@ -243,9 +287,8 @@ const pipes =
 				this.pipe_positions.shift();
 				score.value++;
 				score.best = Math.max(score.value, score.best);
-                localStorage.setItem("best", score.best);
-            }
-
+				localStorage.setItem("best", score.best);
+			}
 		}
 	}
 }
@@ -274,8 +317,6 @@ const getReady =
 		}
 	}
 }
-
-
 const gameOver = 
 {
 	sx: 175,
@@ -297,29 +338,27 @@ const gameOver =
 const score = 
 {
 	best: parseInt(localStorage.getItem("best")) || 0,
-    value: 0,
+	value: 0,
     
-    draw: function()
-    {
-        ctx.fillStyle = "#FFF";
-        ctx.strokeStyle = "#000";
+	draw: function()
+	{
+		ctx.fillStyle = "#FFF";
+		ctx.strokeStyle = "#000";
         
-        if(gameState.current == gameState.game)
-        {
-            ctx.lineWidth = 1;
-            ctx.font = "35px Teko";
-            ctx.fillText(this.value, cvs.width/2, 50);
-            ctx.strokeText(this.value, cvs.width/2, 50);  
+		if(gameState.current == gameState.game)
+		{
+			ctx.lineWidth = 1;
+			ctx.font = "35px Teko";
+			ctx.fillText(this.value, cvs.width/2, 50);
+			ctx.strokeText(this.value, cvs.width/2, 50);  
         }
 		else if(gameState.current == gameState.gameOver)
 		{
-            // SCORE VALUE
-            ctx.font = "25px Teko";
-            ctx.fillText(this.value, 225, 186);
-            ctx.strokeText(this.value, 225, 186);
-            // BEST SCORE
-            ctx.fillText(this.best, 225, 228);
-            ctx.strokeText(this.best, 225, 228);
+			ctx.font = "25px Teko";
+			ctx.fillText(this.value, 225, 186);
+			ctx.strokeText(this.value, 225, 186);
+			ctx.fillText(this.best, 225, 228);
+			ctx.strokeText(this.best, 225, 228);
         }
     },
     
