@@ -111,8 +111,8 @@ const bird =
 	height: 26,
 	frame: 0,
 	fallingSpeed: 0,
-	weight: 1,
-	jump: 7,
+	weight: 0.8,
+	jump: 4,
 	hitBox: 12,
 	rotation: 0,
 	draw: function()
@@ -128,12 +128,12 @@ const bird =
 
 	flap: function()
 	{
-		this.fallingSpeed -= this.jump;
-		if (this.fallingSpeed < -this.jump / 1.2)
+		this.fallingSpeed = -this.jump;
+		/*if (this.fallingSpeed < -this.jump / 1.2)
 		{
 			this.fallingSpeed = -this.jump / 1.2;
 			console.log(this.fallingSpeed);
-		}
+		}*/
 	},
 
 	fire: function()
