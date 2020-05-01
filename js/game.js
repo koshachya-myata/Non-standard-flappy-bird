@@ -175,6 +175,11 @@ const bird =
 				this.rotation = 0;
 			else
 				this.rotation = -25 * Math.PI / 180;
+			if (this.y < -100)
+			{
+				gameState.current = gameState.gameOver;
+				console.log('too up');
+			}
 		}
 	}
 }
