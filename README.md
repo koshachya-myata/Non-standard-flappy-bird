@@ -1,1 +1,1 @@
-"# Non-standard flappy-bird :)" 
+"# CosmoFlappyBird :)" 
